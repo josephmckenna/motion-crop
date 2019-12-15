@@ -357,6 +357,24 @@ struct rotdata {
 
 };
 
+/* Contains data for image cropping, see crop.c. */
+struct cropdata {
+
+  unsigned char* buffer_norm;
+  unsigned char* buffer_high;
+  int px_left;
+  int px_right;
+  int px_top;
+  int px_bottom;
+
+  int capture_width_norm;            /* Capture width of normal resolution image */
+  int capture_height_norm;           /* Capture height of normal resolution image */
+
+  int capture_width_high;            /* Capture width of high resolution image */
+  int capture_height_high;           /* Capture height of high resolution image */
+
+}
+
 /*
  *  These used to be global variables but now each thread will have its
  *  own context
