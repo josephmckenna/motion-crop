@@ -64,6 +64,11 @@ struct config {
     int             framerate;
     int             minimum_frame_time;
     int             rotate;
+    int             crop_left;
+    int             crop_right;
+    int             crop_top;
+    int             crop_bottom;
+
     const char      *flip_axis;
     const char      *locate_motion_mode;
     const char      *locate_motion_style;

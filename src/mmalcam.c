@@ -14,6 +14,7 @@
 #include "translate.h"
 #include "motion.h"
 #include "rotate.h"
+#include "crop.h"
 
 #ifdef HAVE_MMAL
 
@@ -421,7 +422,7 @@ int mmalcam_next(struct context *cnt,  struct image_data *img_data)
     }
 
     rotate_map(cnt,img_data);
-
+    crop_map(cnt,img_data);
     return 0;
 }
 

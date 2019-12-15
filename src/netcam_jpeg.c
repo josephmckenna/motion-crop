@@ -13,6 +13,7 @@
  */
 #include "translate.h"
 #include "rotate.h"    /* already includes motion.h */
+#include "crop.h"
 
 /* This is a workaround regarding these defines.  The config.h file defines
  * HAVE_STDLIB_H as 1 whereas the jpeglib.h just defines it without a value.
@@ -418,6 +419,7 @@ static int netcam_image_conv(netcam_context_ptr netcam,
     jpeg_destroy_decompress(cinfo);
 
     rotate_map(netcam->cnt, img_data);
+    crop_map(netcam->cnt, img_data);
 
     if (netcam->jpeg_error)
         MOTION_LOG(DBG, TYPE_NETCAM, NO_ERRNO,_("jpeg_error %d"), netcam->jpeg_error);

@@ -19,6 +19,7 @@
 */
 #include "translate.h"
 #include "rotate.h"    /* Already includes motion.h */
+#include "crop.h"
 #include "video_common.h"
 #include "video_v4l2.h"
 #include <sys/mman.h>
@@ -1563,7 +1564,8 @@ int v4l2_next(struct context *cnt, struct image_data *img_data) {
 
     /* Rotate the image as specified. */
     rotate_map(cnt, img_data);
-
+    /* Crop the image as specified. */
+    crop_map(cnt, img_data);
     return ret;
 #else
     if (!cnt || !img_data) MOTION_LOG(DBG, TYPE_VIDEO, NO_ERRNO, _("V4L2 is not enabled."));

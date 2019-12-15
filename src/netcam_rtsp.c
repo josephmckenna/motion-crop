@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "translate.h"
 #include "rotate.h"    /* already includes motion.h */
+#include "crop.h"
 #include "netcam_rtsp.h"
 #include "video_v4l2.h"  /* Needed to validate palette for v4l2 via netcam */
 
@@ -1631,6 +1632,9 @@ int netcam_rtsp_next(struct context *cnt, struct image_data *img_data){
     /* Rotate images if requested */
     rotate_map(cnt, img_data);
 
+    /* Cropes images if requested */
+    crop_map(cnt,img_data);
+    
     return 0;
 
 #else  /* No FFmpeg/Libav */

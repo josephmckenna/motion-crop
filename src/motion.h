@@ -373,7 +373,7 @@ struct cropdata {
   int capture_width_high;            /* Capture width of high resolution image */
   int capture_height_high;           /* Capture height of high resolution image */
 
-}
+};
 
 /*
  *  These used to be global variables but now each thread will have its
@@ -415,6 +415,7 @@ struct context {
     int locate_motion_style;
     int process_thisframe;
     struct rotdata rotate_data;              /* rotation data is thread-specific */
+    struct cropdata crop_data;
 
     int noise;
     int threshold;

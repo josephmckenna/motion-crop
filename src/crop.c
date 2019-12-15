@@ -18,6 +18,7 @@
  *      v1 (2019)        - initial version
  */
 #include "translate.h"
+#include "crop.h"
 #include <stdint.h>
 #if defined(__APPLE__)
 #include <libkern/OSByteOrder.h>
@@ -35,18 +36,19 @@
 #include <byteswap.h>
 #endif
 
-static void crop(unsigned char* src, register unsiged char* dst,
+static void crop(unsigned char* src, register unsigned char* dst,
 		 int size_src, int size_dst,
+                 int width_src,
 		 //int width_src, int width_dst,
 		 //int height_src, int height_dst,
 		 int left, int right, int top, int bottom)
 {
   unsigned char* src_endp, dst_endp;
-  register unsiged char* base;
+  register unsigned char* base;
 
   src_endp = src + size_src;
-  dst_endp = dst + size_dst;
-  for (base = src + width*top; base < endp; base++) {
+
+  for (base = src + width_src*top; base < src_endp; base+=right) {
     for (base = base + left; base < base + left - right; base++) {
       *dst++ = *base;
     }
@@ -64,7 +66,7 @@ static void crop(unsigned char* src, register unsiged char* dst,
  *
  * Returns: nothing
  */
-void rotate_init(struct context *cnt){
+void crop_init(struct context *cnt){
     int size_norm, size_high;
 
     /* Make sure buffer_norm isn't freed if it hasn't been allocated. */
@@ -117,16 +119,16 @@ void rotate_init(struct context *cnt){
       cnt->crop_data.px_bottom = cnt->conf.crop_bottom;
     }
 
-    if (cnt->conf.crop_left + cnt->conf.crop_right > img.width) {
-      MOTION_LOG(WRN, TYPE_ALL, NO_ERRO
+    if (cnt->conf.crop_left + cnt->conf.crop_right > cnt->imgs.width) {
+      MOTION_LOG(WRN, TYPE_ALL, NO_ERRNO
 		 ,_("Config option \"crop_left\" (%d) and \"crop_right\" (%d) take away more than the image width: %d")
-		 ,cnt->conf.crop_left,cnt->conf.crop_right,img.width);
+		 ,cnt->conf.crop_left,cnt->conf.crop_right,cnt->imgs.width);
     }
 
-    if (cnt->conf.crop_top + cnt->conf.crop_bottom > img.height) {
-      MOTION_LOG(WRN, TYPE_ALL, NO_ERRO
+    if (cnt->conf.crop_top + cnt->conf.crop_bottom > cnt->imgs.height) {
+      MOTION_LOG(WRN, TYPE_ALL, NO_ERRNO
 		 ,_("Config option \"crop_top\" (%d) and \"crop_bottom\" (%d) take away more than the image height: %d")
-		 ,cnt->conf.crop_top,cnt->conf.crop_bottom,img.height);
+		 ,cnt->conf.crop_top,cnt->conf.crop_bottom,cnt->imgs.height);
     }
     
     /*
@@ -246,7 +248,7 @@ int crop_map(struct context *cnt, struct image_data *img_data){
     int indx, indx_max;
     int wh, wh4 = 0, w2 = 0, h2 = 0;  /* width * height, width * height / 4 etc. */
     int whc, wh4c =0, w2c = 0, h2c =0; /* width * height after crop, width * height / 4 after crop etc. */
-    int size, left, right, top, bottom;
+    int size, sizec, left, right, top, bottom;
     int width, height;
     int widthc, heightc;
     unsigned char *img;
@@ -302,9 +304,9 @@ int crop_map(struct context *cnt, struct image_data *img_data){
         h2 = height / 2;
 	h2c = heightc / 2;
 
-	crop(img           , temp_buff             , wh  , whc  , /*width, widthc, height, heightc,*/ left, right, top, bottom);
-	crop(img + wh      , temp_buff + whc       , wh4 , wh4c , /*w2   , w2c   , h2    , h2c    ,*/ left, right, top, bottom);
-	crop(img + wh + wh4, temp_buff + whc + wh4c, wh4 , wh4c , /*w2   , w2c   , h2    , h2c    ,*/ left, right, top, bottom);
+	crop(img           , temp_buff             , wh  , whc  , width,/*width, widthc, height, heightc,*/ left, right, top, bottom);
+	crop(img + wh      , temp_buff + whc       , wh4 , wh4c , width,/*w2   , w2c   , h2    , h2c    ,*/ left, right, top, bottom);
+	crop(img + wh + wh4, temp_buff + whc + wh4c, wh4 , wh4c , width,/*w2   , w2c   , h2    , h2c    ,*/ left, right, top, bottom);
         memcpy(img, temp_buff, sizec);
 
         indx++;       
